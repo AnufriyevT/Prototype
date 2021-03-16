@@ -28,7 +28,7 @@ class StrategicDomain(FeasibleDomain):
 
 
 class CurrentDomain(StrategicDomain):
-    pass
+    definition = models.TextField()
 
 
 class Vocabulary(models.Model):
@@ -36,11 +36,15 @@ class Vocabulary(models.Model):
 
 
 class DomainSpecific(Vocabulary):
-    pass
+    acronyms = models.CharField(max_length=512)
+    symbols = models.CharField(max_length=512)
+    terms = models.CharField(max_length=512)
 
 
 class NonDomainSpecific(Vocabulary):
-    pass
+    acronyms = models.CharField(max_length=512)
+    symbols = models.CharField(max_length=512)
+    terms = models.CharField(max_length=512)
 
 
 class Product(models.Model):
@@ -48,6 +52,9 @@ class Product(models.Model):
     domain = models.ForeignKey(CurrentDomain, on_delete=models.CASCADE)
     followers = models.ManyToManyField('self')
     users = models.ManyToManyField(User)
+    description = models.TextField()
+    input_formats = models.ManyToManyField('DataFormat', related_name='inputs')
+    output_formats = models.ManyToManyField('DataFormat', related_name='outputs')
 
 
 class API(models.Model):
@@ -58,6 +65,7 @@ class API(models.Model):
 class Family(models.Model):
     name = models.CharField(max_length=256)
     products = models.ManyToManyField(Product)
+    description = models.TextField()
 
 
 class Suite(models.Model):
@@ -68,37 +76,47 @@ class Suite(models.Model):
 class Standard(models.Model):
     name = models.CharField(max_length=256)
     products = models.ManyToManyField(Product)
+    description = models.TextField()
 
 
 class DataFormat(models.Model):
-    name = models.CharField(max_length=256)
-    products = models.ManyToManyField(Product)
+    type = models.CharField(max_length=256)
+    read_write = models.BooleanField()
 
 
 class Producer(models.Model):
     name = models.CharField(max_length=256)
     competitors = models.ManyToManyField('self')
+    leader = models.BooleanField()
 
 
-class Retail(User):
+class MarketSegment(User):
+    pass
+
+
+class Retail(MarketSegment):
     pass
 
 
 class StandardRetail(Retail):
-    pass
+    simple_cost = models.FloatField()
+    upgrade_cost = models.FloatField()
 
 
 class VolumeRetail(Retail):
-    pass
+    simple_cost = models.FloatField()
+    upgrade_cost = models.FloatField()
 
 
-class Academic(User):
+class Academic(MarketSegment):
     pass
 
 
 class SingleAcademic(Academic):
-    pass
+    simple_cost = models.FloatField()
+    upgrade_cost = models.FloatField()
 
 
 class VolumeAcademic(Academic):
-    pass
+    simple_cost = models.FloatField()
+    upgrade_cost = models.FloatField()
