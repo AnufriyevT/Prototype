@@ -4,13 +4,13 @@ from .models import Project
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'domain', 'get_vocabulary', 'get_products', 'author')
+    list_display = ('name', 'domain', 'vocabulary', 'products', 'author')
 
-    def get_vocabulary(self, obj):
-        return "\n".join([p.vocabulary for p in obj.project.all()])
+    def vocabulary(self, obj):
+        return "\n".join([vocabulary.term for vocabulary in obj.vocabulary.all()])
 
-    def get_products(self, obj):
-        return "\n".join([p.product for p in obj.project.all()])
+    def products(self, obj):
+        return "\n".join([product.name for product in obj.product.all()])
 
 
 admin.site.register(Project, ProjectAdmin)

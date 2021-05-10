@@ -131,6 +131,7 @@ class ProductSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Product
         fields = (
+            'id',
             'name',
             'description',
             'producer',
@@ -151,6 +152,7 @@ class ProjectSerializer(WritableNestedModelSerializer):
     class Meta:
         model = Project
         fields = (
+            'id',
             'name',
             'domain',
             'vocabulary',

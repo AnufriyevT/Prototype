@@ -14,9 +14,15 @@ class Vocabulary(models.Model):
     term = models.CharField(max_length=512)
     description = models.TextField()
 
+    def __str__(self):
+        return self.term
+
 
 class Producer(models.Model):
     name = models.CharField(max_length=512)
+
+    def __str__(self):
+        return self.name
 
 
 class Value(models.Model):
@@ -52,13 +58,22 @@ class Pricing(models.Model):
 class Standard(models.Model):
     name = models.CharField(max_length=512, blank=False)
 
+    def __str__(self):
+        return self.name
+
 
 class Input(models.Model):
     name = models.CharField(max_length=512, blank=False)
 
+    def __str__(self):
+        return self.name
+
 
 class Output(models.Model):
     name = models.CharField(max_length=512, blank=False)
+
+    def __str__(self):
+        return self.name
 
 
 class DataFormat(models.Model):
@@ -77,6 +92,9 @@ class Product(models.Model):
     data_format = models.ForeignKey(DataFormat, on_delete=models.SET_NULL, null=True)
     complementary_products = models.ManyToManyField("self", null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Project(models.Model):
     name = models.CharField(max_length=512)
@@ -84,3 +102,6 @@ class Project(models.Model):
     vocabulary = models.ManyToManyField(Vocabulary)
     product = models.ManyToManyField(Product)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
