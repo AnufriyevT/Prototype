@@ -84,4 +84,3 @@ class Project(models.Model):
     vocabulary = models.ManyToManyField(Vocabulary)
     product = models.ManyToManyField(Product)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-

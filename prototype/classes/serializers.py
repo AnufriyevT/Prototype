@@ -1,3 +1,4 @@
+from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from .models import Project, Domain, Vocabulary, Product, Producer, Value, Standard, DataFormat, Pricing, Retail, \
@@ -60,7 +61,7 @@ class OutputSerializer(serializers.ModelSerializer):
         )
 
 
-class DataFormatSerializer(serializers.ModelSerializer):
+class DataFormatSerializer(WritableNestedModelSerializer):
     input = InputSerializer(many=True)
     output = OutputSerializer(many=True)
 
@@ -87,7 +88,7 @@ class VolumePriceSerializer(serializers.ModelSerializer):
         )
 
 
-class RetailSerializer(serializers.ModelSerializer):
+class RetailSerializer(WritableNestedModelSerializer):
     standard = StandardPriceSerializer()
     volume = VolumePriceSerializer()
 
@@ -98,7 +99,7 @@ class RetailSerializer(serializers.ModelSerializer):
         )
 
 
-class AcademicSerializer(serializers.ModelSerializer):
+class AcademicSerializer(WritableNestedModelSerializer):
     standard = StandardPriceSerializer()
     volume = VolumePriceSerializer()
 
@@ -109,7 +110,7 @@ class AcademicSerializer(serializers.ModelSerializer):
         )
 
 
-class PricingSerializer(serializers.ModelSerializer):
+class PricingSerializer(WritableNestedModelSerializer):
     retail = RetailSerializer()
     academic = AcademicSerializer()
 
@@ -120,7 +121,7 @@ class PricingSerializer(serializers.ModelSerializer):
         )
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(WritableNestedModelSerializer):
     producer = ProducerSerializer()
     value = ValueSerializer()
     standards = StandardsSerializer(many=True)
@@ -142,7 +143,7 @@ class ProductSerializer(serializers.ModelSerializer):
         )
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(WritableNestedModelSerializer):
     domain = DomainSerializer()
     vocabulary = VocabularySerializer(many=True)
     product = ProductSerializer(many=True)
@@ -159,43 +160,3 @@ class ProjectSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'author': {'read_only': True},
         }
-
-    def create_vocabulary(self, validated_data, project):
-        vocabularies = validated_data.pop('vocabulary')
-        for vocabulary in vocabularies:
-            voc = Vocabulary.objects.create()
-            voc.term = vocabulary.get('term')
-            voc.description = vocabulary.get('description')
-            voc.save()
-            project.vocabulary.add(voc)
-        project.save()
-
-    def create_domain(self, validated_data, project):
-        domain = validated_data.pop('domain')
-        dom = Domain.objects.create()
-        dom.feasible = domain.get('feasible')
-        dom.strategic = domain.get('strategic')
-        dom.current = domain.get('current')
-        project.domain = dom
-        project.save()
-
-    def create_product(self, validated_data, project):
-        product = validated_data.pop('product')
-        prod = Product.objects.create()
-        prod.name = product.get('name')
-        prod.description = product.get('description')
-        prod.producer = product.get('producer')
-        prod.leader = product.get('leader')
-        prod.value = product.get('value')
-        prod.standards = product.get('standards')
-        prod.pricing = product.get('pricing')
-        prod.data = product.get('data_format')
-        prod.complementary_products = product.get('complementary_products')
-        project.product = product
-        project.save()
-
-    def create(self, validated_data):
-        project = Project.objects.create(**validated_data)
-        self.create_vocabulary(validated_data, project)
-        self.create_domain(validated_data, project)
-        self.create_product(validated_data, project)
